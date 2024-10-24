@@ -23,14 +23,12 @@ public class Player : MonoBehaviour
         a = 4;
         int c = a + b;
         c = 1 + a;
-        Debug.Log(c);
         c = c + 1;
         c += 1;
         // Zwiêksza c o 1
         c++;
         // Dodaje 200 do c
         c += 200;
-        Debug.Log(c);
         c += a + b;
         c /= 2;
         
