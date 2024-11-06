@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
         c += 200;
         c += a + b;
         c /= 2;
-        
+
 
     }
 
@@ -41,6 +41,22 @@ public class Player : MonoBehaviour
         // FPS = 60
         //czas trfania klatki 1/60 - Time.deltaTime
         //transform.Translate(1 * Time.deltaTime,0,0);
-        transform.Rotate(0, velocity * Time.deltaTime, 0);
+        if (Input.GetKey(KeyCode.D))
+        {
+            transform.Translate(velocity * Time.deltaTime, 0, 0);
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.Translate(-velocity * Time.deltaTime, 0, 0);
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.Translate(0, velocity * Time.deltaTime, 0);
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            transform.Translate(0, -velocity * Time.deltaTime, 0);
+        }
+
     }
 }
