@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: PoweAttack
   m_EditorClassIdentifier: 
   Damage: 2
-  Name: PoweAttack
+  ManaCost: 2
+  Name: PowerAttack
   Icon: {fileID: 0}
   Description: 
   UseEffect: {fileID: 0}

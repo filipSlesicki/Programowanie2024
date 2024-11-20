@@ -4,14 +4,23 @@ using UnityEngine;
 public class DamageAbility : ScriptableObject
 {
     public float Damage;
+    public float ManaCost;
     public string Name;
     public Sprite Icon;
     public string Description;
     public GameObject UseEffect;
     public AudioClip UseSound;
 
-    public void Use(Health target)
+    public bool Use(Health target, Mana userMana)
     {
-        target.ModifyHealth(-Damage);
+        if(userMana.currentMana >= ManaCost)
+        {
+            userMana.ModifyMana(-ManaCost);
+            target.ModifyHealth(-Damage);
+            return true;
+        }
+        Debug.Log("Not enough mana");
+        return false;
+
     }
 }

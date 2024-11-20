@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Heal
   m_EditorClassIdentifier: 
   Damage: -1
+  ManaCost: 1
   Name: Heal
   Icon: {fileID: 0}
   Description: 

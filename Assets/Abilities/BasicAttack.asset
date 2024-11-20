@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BasicAttack
   m_EditorClassIdentifier: 
   Damage: 1
+  ManaCost: 0
   Name: BasicAttack
   Icon: {fileID: 0}
   Description: 
