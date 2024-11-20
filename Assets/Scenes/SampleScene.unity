@@ -151,7 +151,7 @@ MonoBehaviour:
   winnerText: {fileID: 753380767}
   speed: 0.1
   distanceToWin: 2
-  timeBetweenMoves: 0.2
+  timeBetweenMoves: 1
 --- !u!4 &1465245
 Transform:
   m_ObjectHideFlags: 0
@@ -256,7 +256,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1465244}
         m_TargetAssemblyTypeName: TugOfWar, Assembly-CSharp
-        m_MethodName: DebugTest
+        m_MethodName: Move
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
