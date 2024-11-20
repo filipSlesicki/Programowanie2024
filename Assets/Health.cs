@@ -27,6 +27,7 @@ public class Health : MonoBehaviour
 
     public void ModifyHealth(float amount)
     {
+        Debug.Log("Modify health by " + amount);
         currentHealth += amount;
         if(currentHealth > maxHealth)
         {
@@ -36,6 +37,7 @@ public class Health : MonoBehaviour
         {
             // Death
         }
+        Debug.Log("Current health is " + currentHealth);
         UpdateHealthUI();
     }
 
