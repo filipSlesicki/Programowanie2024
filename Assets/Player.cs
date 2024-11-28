@@ -11,52 +11,52 @@ public class Player : MonoBehaviour
     // bool - zmienna logiczna true/false
 
     public float velocity = 1f;
+    public float rotationSpeed = 90;
+    public Bullet bulletPrefab;
+    public Transform shootPoint;
+    private Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
     {
-        int a = 2;
-        int b = 3;
-        a = 6;
-        b = 10;
-        b = a;
-        a = 4;
-        int c = a + b;
-        c = 1 + a;
-        c = c + 1;
-        c += 1;
-        // Zwiêksza c o 1
-        c++;
-        // Dodaje 200 do c
-        c += 200;
-        c += a + b;
-        c /= 2;
+        rb = GetComponent<Rigidbody>();
+    }
 
-
+    private void FixedUpdate()
+    {
+        if (Input.GetKey(KeyCode.W))
+        {
+            rb.AddForce(transform.up * velocity);
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            rb.AddForce(-transform.up * velocity);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Shoot();
+        }
         // FPS = 60
         //czas trfania klatki 1/60 - Time.deltaTime
         //transform.Translate(1 * Time.deltaTime,0,0);
         if (Input.GetKey(KeyCode.D))
         {
-            transform.Translate(velocity * Time.deltaTime, 0, 0);
+            transform.Rotate(0, 0, -rotationSpeed * Time.deltaTime);
         }
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Translate(-velocity * Time.deltaTime, 0, 0);
+            transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(0, velocity * Time.deltaTime, 0);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(0, -velocity * Time.deltaTime, 0);
-        }
+    }
 
+    private void Shoot()
+    {
+        Debug.Log("Shoot");
+        Bullet bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
     }
 }
