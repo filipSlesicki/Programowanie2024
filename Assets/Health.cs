@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
+    public UnityEvent deathEvent;
     public Image healthBar;
     public float maxHealth = 10;
     private float currentHealth;
+    private object fin;
 
     void Start()
     {
@@ -16,13 +19,23 @@ public class Health : MonoBehaviour
     public void ModifyHealth(float amount)
     {
         currentHealth += amount;
-        if(currentHealth > maxHealth)
+        if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
         }
-        else if(currentHealth <= 0)
+        else if (currentHealth <= 0)
         {
-            // Death
+            deathEvent.Invoke();
+            //if (gameObject.CompareTag("Asteroid"))
+            //{
+            //    FindAnyObjectByType<ScoreManager>().AddScore();
+            //}
+            //if (gameObject.CompareTag("Player"))
+            //{
+            //    Destroy(FindAnyObjectByType<AsteroidsGameController>());
+            //}
+            Destroy(gameObject);
+
         }
 
         UpdateHealthUI();
@@ -30,7 +43,10 @@ public class Health : MonoBehaviour
 
     private void UpdateHealthUI()
     {
-        float normalizedHealth = (float)currentHealth / maxHealth;
-        healthBar.fillAmount = normalizedHealth;
+        if (healthBar != null)
+        {
+            float normalizedHealth = (float)currentHealth / maxHealth;
+            healthBar.fillAmount = normalizedHealth;
+        }
     }
 }
