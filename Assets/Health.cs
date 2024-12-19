@@ -26,14 +26,6 @@ public class Health : MonoBehaviour
         else if (currentHealth <= 0)
         {
             deathEvent.Invoke();
-            //if (gameObject.CompareTag("Asteroid"))
-            //{
-            //    FindAnyObjectByType<ScoreManager>().AddScore();
-            //}
-            //if (gameObject.CompareTag("Player"))
-            //{
-            //    Destroy(FindAnyObjectByType<AsteroidsGameController>());
-            //}
             Destroy(gameObject);
 
         }

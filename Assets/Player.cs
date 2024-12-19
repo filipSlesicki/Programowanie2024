@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour
     public float rotationSpeed = 90;
     public Bullet bulletPrefab;
     public Transform shootPoint;
+    public UnityEvent onShoot;
     private Rigidbody rb;
 
     // Start is called before the first frame update
@@ -24,6 +26,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         if (Input.GetKey(KeyCode.W))
         {
             rb.AddForce(transform.up * velocity);
@@ -56,6 +59,7 @@ public class Player : MonoBehaviour
 
     private void Shoot()
     {
+        onShoot.Invoke();
         Debug.Log("Shoot");
         Bullet bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
     }
