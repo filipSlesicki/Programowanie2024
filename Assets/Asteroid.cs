@@ -4,6 +4,7 @@ public class Asteroid : MonoBehaviour
 {
     public float speed;
     private Rigidbody rb;
+    public GameObject explosionPrefab;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -20,6 +21,8 @@ public class Asteroid : MonoBehaviour
     public void OnDeath()
     {
         FindAnyObjectByType<ScoreManager>().AddScore();
+        GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Destroy(explosion, 2);
     }
 
     private void OnCollisionEnter(Collision collision)

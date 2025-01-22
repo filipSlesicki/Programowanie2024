@@ -15,13 +15,16 @@ public class Player : MonoBehaviour
     public float rotationSpeed = 90;
     public Bullet bulletPrefab;
     public Transform shootPoint;
+    public AudioSource shootAudio;
     public UnityEvent onShoot;
+    private PauseManager pauseManager;
     private Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        pauseManager = FindAnyObjectByType<PauseManager>();
     }
 
     private void FixedUpdate()
@@ -40,6 +43,12 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(pauseManager.isGamePaused)
+        {
+            // Przerywamy dzia³anie w tym miejscu
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Shoot();
@@ -60,6 +69,7 @@ public class Player : MonoBehaviour
     private void Shoot()
     {
         onShoot.Invoke();
+        shootAudio.Play();
         Debug.Log("Shoot");
         Bullet bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
     }
