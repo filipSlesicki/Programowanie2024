@@ -1,7 +1,9 @@
+using UnityEngine.Events;
 using UnityEngine;
 
 public class UnitControler : MonoBehaviour
 {
+    public UnityEvent NextTurnEvent { get; private set; } = new UnityEvent();
     private Unit selectedUnit;
 
     void Update()
@@ -15,7 +17,7 @@ public class UnitControler : MonoBehaviour
                 //if(unit != null)
                 if (mouseHit.transform.TryGetComponent(out Unit unit)) // To dzia³a je¿eli parent ma rigidbody
                 {
-                    if(unit.moved)
+                    if (unit.Moved)
                     {
                         return;
                     }
@@ -46,16 +48,21 @@ public class UnitControler : MonoBehaviour
         }
     }
 
+    public void EndTurn()
+    {
+        NextTurnEvent?.Invoke();
+    }
 
-
-    public Vector3 rayStart;
-    public Vector3 rayDirection;
-    public float rayDistance = 5;
+    [SerializeField]
+    private Vector3 rayStart;
+    [SerializeField] private Vector3 rayDirection;
+    [Range(0f, 10f)]
+    [Tooltip("Zasiêg raycasta gizmo ")]
+    [SerializeField] private float rayDistance = 5;
 
     void DoSomething(out float cos)
     {
         cos = 5324f;
-
     }
 
 
