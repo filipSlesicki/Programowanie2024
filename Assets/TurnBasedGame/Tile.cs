@@ -2,15 +2,12 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public bool IsOccupied;
+    public Vector2Int Position;
+    private float tileScale = 2;
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        Position = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.z) / tileScale);
     }
 }

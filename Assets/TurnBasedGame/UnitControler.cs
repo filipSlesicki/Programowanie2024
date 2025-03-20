@@ -1,10 +1,18 @@
 using UnityEngine.Events;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class UnitControler : MonoBehaviour
 {
     public UnityEvent NextTurnEvent { get; private set; } = new UnityEvent();
     private Unit selectedUnit;
+    private List<Tile> tilesInRange;
+    private Map map;
+
+    private void Awake()
+    {
+        map = FindAnyObjectByType<Map>();
+    }
 
     void Update()
     {
@@ -25,16 +33,23 @@ public class UnitControler : MonoBehaviour
                     if (selectedUnit != null)
                     {
                         selectedUnit.Deselect();
+                        tilesInRange.Clear();
                     }
 
                     selectedUnit = unit;
                     selectedUnit.Select();
+                    tilesInRange = selectedUnit.GetTilesInRange();
                 }
-                else if (mouseHit.transform.TryGetComponent(out Tile tile) && selectedUnit != null)
+                else if (mouseHit.transform.TryGetComponent(out Tile tile) 
+                    && !tile.IsOccupied 
+                    && selectedUnit != null)
                 {
-                    selectedUnit.transform.position = tile.transform.position;
-                    selectedUnit.FinishMove();
-                    selectedUnit = null;
+                    if(tilesInRange.Contains(tile))
+                    {
+                        selectedUnit.Move(tile);
+                        selectedUnit = null;
+                        tilesInRange.Clear();
+                    }
                 }
             }
             else
