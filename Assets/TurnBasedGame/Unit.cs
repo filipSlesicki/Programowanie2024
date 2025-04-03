@@ -5,26 +5,11 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class Unit : MonoBehaviour
 {
-    //private bool moved;
-    //public bool Moved 
-    //{ 
-    //    get
-    //    {
-    //        return moved;
-    //    }
-    //    private set
-    //    {
-    //        //Debug.Log("Setting value to " + value);
-    //        moved = value;
-    //    }
-    //}
-
+    public int Team;
     [field: SerializeField] public bool Moved { get; private set; } = false;
-
-    private float diameter { get { return radius * 2; } set { radius = value / 2; } }
-    float d => diameter;// {get {return diameter;}}
     [SerializeField] private float radius = 1;
     [SerializeField] private int moveRange = 3;
+    [SerializeField] public int attackRange = 1;
     [SerializeField] private float moveTime = 0.5f;
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private Material selectedMaterial;
@@ -34,7 +19,7 @@ public class Unit : MonoBehaviour
 
     public Tile currentTile;
     private UnitControler unitControler;
-    Map map;
+    private Map map;
     private float tileScale = 2;
     private void Start()
     {
@@ -51,7 +36,6 @@ public class Unit : MonoBehaviour
     public void Select()
     {
         meshRenderer.material = selectedMaterial;
-        GetTilesInRange();
     }
 
     public void Deselect()
@@ -89,7 +73,7 @@ public class Unit : MonoBehaviour
         Moved = true;
     }
 
-    public void OnNewTurn()
+    public void OnNewTurn(int currentTeam)
     {
         meshRenderer.material = normalMaterial;
         Moved = false;
@@ -109,6 +93,34 @@ public class Unit : MonoBehaviour
             Debug.Log(tilesInRange[i].gameObject.name);
         }
         return tilesInRange;
+    }
+
+    public HashSet<Tile> GetTilesInRange2()
+    {
+        HashSet<Tile> awailableTiles = new HashSet<Tile>();
+        List<Tile> checkingTiles = new List<Tile>();
+        awailableTiles.Add(currentTile);
+        checkingTiles.Add(currentTile);
+
+        for (int i = 0; i < moveRange; i++)
+        {
+            List<Tile> nextCheckingTiles = new List<Tile>();
+            foreach (Tile tile in checkingTiles)
+            {
+                foreach (Tile neighbourTile in tile.Neighbours)
+                {
+                    if (awailableTiles.Contains(neighbourTile) || neighbourTile.IsOccupied)
+                    {
+                        continue;
+                    }
+                    nextCheckingTiles.Add(neighbourTile);
+                    awailableTiles.Add(neighbourTile);
+                }
+            }
+            checkingTiles = nextCheckingTiles;
+
+        }
+        return awailableTiles;
     }
 
     private void OnDrawGizmosSelected()

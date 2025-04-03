@@ -7,7 +7,7 @@ public class Map : MonoBehaviour
     private Tile[] tiles;
     private float tileScale = 2;
 
-    private void Start()
+    private void Awake()
     {
         tiles = FindObjectsByType<Tile>(FindObjectsSortMode.None);
     }
@@ -46,7 +46,6 @@ public class Map : MonoBehaviour
             if (distanceX + distanceY <= range)
             {
                 tilesInRange.Add(tile);
-                Debug.DrawLine(new Vector3(from.x, 0, from.y) * tileScale, tile.transform.position, Color.green, 3);
             }
         }
         return tilesInRange;
