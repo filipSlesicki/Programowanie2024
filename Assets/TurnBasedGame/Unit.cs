@@ -6,29 +6,31 @@ using System.Collections;
 public class Unit : MonoBehaviour
 {
     public int Team;
+    public Tile CurrentTile { get; private set; }
     [field: SerializeField] public bool Moved { get; private set; } = false;
     [SerializeField] private float radius = 1;
     [SerializeField] private int moveRange = 3;
     [SerializeField] public int attackRange = 1;
+    [SerializeField] public int attackDamage = 1;
     [SerializeField] private float moveTime = 0.5f;
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private Material selectedMaterial;
     [SerializeField] private Material normalMaterial;
     [SerializeField] private Material movedMaterial;
     [SerializeField] private LayerMask tileLayer;
-
-    public Tile currentTile;
     private UnitControler unitControler;
     private Map map;
     private float tileScale = 2;
+
     private void Start()
     {
         map = FindAnyObjectByType<Map>();
         unitControler = FindAnyObjectByType<UnitControler>();
         unitControler.NextTurnEvent.AddListener(OnNewTurn);
-        if (map.TryGetTileOnPosition(transform.position, out currentTile))
+        if (map.TryGetTileOnPosition(transform.position, out Tile tile))
         {
-            currentTile.IsOccupied = true;
+            CurrentTile = tile;
+            CurrentTile.unit = this;
         }
     }
 
@@ -45,13 +47,21 @@ public class Unit : MonoBehaviour
 
     public void Move(Tile tile)
     {
-        if (currentTile != null)
+        if (CurrentTile != null)
         {
-            currentTile.IsOccupied = false;
+            // Wychodzimy z poprzedniego pola
+            CurrentTile.unit = null;
         }
-        currentTile = tile;
-        tile.IsOccupied = true;
+        // Wchodzimy na nowe pole
+        CurrentTile = tile;
+        tile.unit = this;
         StartCoroutine(MoveToPosition(tile.transform.position));
+        FinishMove();
+    }
+
+    public void Attack(Unit target)
+    {
+        target.GetComponent<Health>().ModifyHealth(-attackDamage);
         FinishMove();
     }
 
@@ -79,28 +89,18 @@ public class Unit : MonoBehaviour
         Moved = false;
     }
 
-    public List<Tile> GetTilesInRange()
+    public HashSet<Tile> GetTilesInAttackRange()
     {
-        Vector2Int position = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.z) / tileScale);
-        List<Tile> tilesInRange = FindAnyObjectByType<Map>().GetTilesInRange(position, moveRange);
-
-        //float scaledMoveRange = tileScale / 2 + moveRange * tileScale;
-        //Collider[] tilesInRange = Physics.OverlapBox(transform.position,
-        //    new Vector3(scaledMoveRange, 1, scaledMoveRange), Quaternion.identity, tileLayer);
-
-        for (int i = 0; i < tilesInRange.Count; i++)
-        {
-            Debug.Log(tilesInRange[i].gameObject.name);
-        }
+        HashSet<Tile> tilesInRange = FindAnyObjectByType<Map>().GetTilesInRange(CurrentTile.Position, attackRange);
         return tilesInRange;
     }
 
-    public HashSet<Tile> GetTilesInRange2()
+    public HashSet<Tile> GetTilesInMoveRange()
     {
         HashSet<Tile> awailableTiles = new HashSet<Tile>();
         List<Tile> checkingTiles = new List<Tile>();
-        awailableTiles.Add(currentTile);
-        checkingTiles.Add(currentTile);
+        awailableTiles.Add(CurrentTile);
+        checkingTiles.Add(CurrentTile);
 
         for (int i = 0; i < moveRange; i++)
         {

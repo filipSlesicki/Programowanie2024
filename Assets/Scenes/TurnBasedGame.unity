@@ -3137,7 +3137,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Move
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3696,6 +3696,14 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5971015343042988998, guid: b1677f29d20d1f445ae2cc0824f76205, type: 3}
+      propertyPath: attackRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5971015343042988998, guid: b1677f29d20d1f445ae2cc0824f76205, type: 3}
+      propertyPath: attackDamage
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5971015343042988998, guid: b1677f29d20d1f445ae2cc0824f76205, type: 3}
       propertyPath: normalMaterial
       value: 
       objectReference: {fileID: 2100000, guid: d16e4e18190d139409f04324a033eb19, type: 2}
@@ -4032,9 +4040,6 @@ MonoBehaviour:
         m_CallState: 2
   teams: 0100000002000000
   activeTeamIndex: 0
-  rayStart: {x: 0, y: 4.66, z: 0}
-  rayDirection: {x: 1, y: 0, z: 0}
-  rayDistance: 8.41
 --- !u!4 &1584536802
 Transform:
   m_ObjectHideFlags: 0
@@ -4313,7 +4318,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1584536801}
         m_TargetAssemblyTypeName: UnitControler, Assembly-CSharp
-        m_MethodName: ShowAttackTiles
+        m_MethodName: GoToAttackState
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4769,7 +4774,7 @@ GameObject:
   - component: {fileID: 1767816500}
   - component: {fileID: 1767816499}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: MoveButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4838,7 +4843,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1767816500}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1584536801}
+        m_TargetAssemblyTypeName: UnitControler, Assembly-CSharp
+        m_MethodName: GoToMoveState
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1767816500
 MonoBehaviour:
   m_ObjectHideFlags: 0

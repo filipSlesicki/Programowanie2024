@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [HideInInspector] public List<Tile> Neighbours;
-    public bool IsOccupied;
+    public bool IsOccupied { get { return unit != null; } }
+    [HideInInspector] public HashSet<Tile> Neighbours;
+    public Unit unit;
     public Vector2Int Position;
     private float tileScale = 2;
 

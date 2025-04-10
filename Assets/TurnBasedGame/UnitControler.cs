@@ -1,15 +1,18 @@
 using UnityEngine.Events;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public class UnitControler : MonoBehaviour
 {
     [field: SerializeField] public UnityEvent<int> NextTurnEvent { get; private set; } = new UnityEvent<int>();
     private Unit selectedUnit;
-    private HashSet<Tile> tilesInRange;
+    private HashSet<Tile> tilesInRange = new HashSet<Tile>();
     private Map map;
     [SerializeField] private List<int> teams;
     public int activeTeamIndex;
+    private ControlState controlState;
+
 
     private void Awake()
     {
@@ -19,58 +22,99 @@ public class UnitControler : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        // EventSystem.current.IsPointerOverGameObject() sprawdza czy myszka jest nad UI
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(mouseRay, out RaycastHit mouseHit))
+            OnMouseClick();
+        }
+    }
+
+    private void OnMouseClick()
+    {
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(mouseRay, out RaycastHit mouseHit))
+        {
+            if (mouseHit.transform.TryGetComponent(out Unit unit)) // To dzia³a je¿eli parent ma rigidbody
             {
-                //Unit unit = mouseHit.transform.GetComponentInParent<Unit>();
-                //if(unit != null)
-                if (mouseHit.transform.TryGetComponent(out Unit unit)) // To dzia³a je¿eli parent ma rigidbody
+                OnClickOnUnit(unit);
+            }
+            else if (mouseHit.transform.TryGetComponent(out Tile tile))
+            {
+                OnClickOnTile(tile);
+            }
+        }
+        else
+        {
+            OnClickOnNothing();
+        }
+    }
+
+    private void OnClickOnNothing()
+    {
+        if (selectedUnit != null)
+        {
+            selectedUnit.Deselect();
+            selectedUnit = null;
+            ChangeState(ControlState.None);
+        }
+    }
+
+    private void OnClickOnTile(Tile tile)
+    {
+        if(selectedUnit == null || !tilesInRange.Contains(tile))
+        {
+            return;
+        }
+
+        if(controlState == ControlState.Move)
+        {
+            if (!tile.IsOccupied)
+            {
+                selectedUnit.Move(tile);
+                selectedUnit = null;
+                ChangeState(ControlState.None);
+            }
+        }
+        else if(controlState == ControlState.Attack)
+        {
+            if(tile.IsOccupied)
+            {
+                Unit unitOnTile = tile.unit;
+                if (unitOnTile.Team != teams[activeTeamIndex])
                 {
-                    if(unit.Team != teams[activeTeamIndex])
-                    {
-                        return;
-                    }
-
-                    if (unit.Moved)
-                    {
-                        return;
-                    }
-
-                    if (selectedUnit != null)
-                    {
-                        selectedUnit.Deselect();
-                        ClearTilesInRange();
-                    }
-
-                    selectedUnit = unit;
-                    selectedUnit.Select();
-                    tilesInRange = selectedUnit.GetTilesInRange2();
-                    foreach (Tile tile in tilesInRange)
-                    {
-                        tile.GetComponent<MeshRenderer>().material.color = Color.blue;
-                    }
-                }
-                else if (mouseHit.transform.TryGetComponent(out Tile tile) 
-                    && !tile.IsOccupied 
-                    && selectedUnit != null)
-                {
-                    if(tilesInRange.Contains(tile))
-                    {
-                        selectedUnit.Move(tile);
-                        selectedUnit = null;
-                        ClearTilesInRange();
-                    }
+                    selectedUnit.Attack(unitOnTile);
+                    ChangeState(ControlState.None);
+                    Debug.Log("Attack unit " + unitOnTile.gameObject.name);
                 }
             }
-            else
+        }
+    }
+
+    private void OnClickOnUnit(Unit clickedUnit)
+    {
+        if (controlState == ControlState.Move || controlState == ControlState.None)
+        {
+            if (selectedUnit != null)
             {
-                if (selectedUnit != null)
+                selectedUnit.Deselect();
+                ClearTilesInRange();
+            }
+
+            if (clickedUnit.Team == teams[activeTeamIndex] && !clickedUnit.Moved)
+            {
+                selectedUnit = clickedUnit;
+                ChangeState(ControlState.Move);
+            }
+        }
+        else if (controlState == ControlState.Attack)
+        {
+            if(clickedUnit.Team != teams[activeTeamIndex])
+            {
+                if(tilesInRange.Contains(clickedUnit.CurrentTile))
                 {
-                    selectedUnit.Deselect();
-                    selectedUnit = null;
-                    ClearTilesInRange();
+                    selectedUnit.Attack(clickedUnit);
+                    ChangeState(ControlState.None);
+                    Debug.Log("Attack unit " + clickedUnit.gameObject.name);
                 }
             }
         }
@@ -85,54 +129,50 @@ public class UnitControler : MonoBehaviour
         tilesInRange.Clear();
     }
 
+    public void ChangeState(ControlState nextState)
+    {
+        ClearTilesInRange();
+        controlState = nextState;
+
+        if (selectedUnit == null)
+        {
+            return;
+        }
+
+        Color tileColor = Color.white;
+        if(controlState == ControlState.Attack)
+        {
+            tileColor = Color.red;
+            tilesInRange = map.GetTilesInRange(selectedUnit.CurrentTile.Position, selectedUnit.attackRange);
+        }
+        else if(controlState == ControlState.Move)
+        {
+            tileColor = Color.blue;
+            tilesInRange = selectedUnit.GetTilesInMoveRange();
+        }
+
+        foreach (Tile tile in tilesInRange)
+        {
+            tile.GetComponent<MeshRenderer>().material.color = tileColor;
+        }
+    }
+
+    // UI
     public void EndTurn()
     {
         activeTeamIndex = (activeTeamIndex + 1) % teams.Count;
         NextTurnEvent?.Invoke(teams[activeTeamIndex]);
+        ChangeState(ControlState.None);
+        selectedUnit = null;
     }
 
-    public void ShowAttackTiles()
+    public void GoToAttackState()
     {
-        if(selectedUnit == null)
-        {
-            return;
-        }
-        List<Tile> attackTiles = map.GetTilesInRange(selectedUnit.currentTile.Position, selectedUnit.attackRange);
-        foreach (Tile tile in attackTiles)
-        {
-            tile.GetComponent<MeshRenderer>().material.color = Color.red;
-        }
+        ChangeState(ControlState.Attack);
     }
 
-    [SerializeField]
-    private Vector3 rayStart;
-    [SerializeField] private Vector3 rayDirection;
-    [Range(0f, 10f)]
-    [Tooltip("Zasiêg raycasta gizmo ")]
-    [SerializeField] private float rayDistance = 5;
-
-    void DoSomething(out float cos)
+    public void GoToMoveState()
     {
-        cos = 5324f;
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(rayStart, 0.1f);
-
-        if (Physics.Raycast(rayStart, rayDirection, out RaycastHit hit, rayDistance))
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawRay(hit.point, hit.normal);
-            Gizmos.color = Color.yellow;
-            Debug.Log(hit.transform.gameObject.name);
-        }
-        else
-        {
-            Gizmos.color = Color.green;
-        }
-        Gizmos.DrawRay(rayStart, rayDirection.normalized * rayDistance);
+        ChangeState(ControlState.Move);
     }
 }

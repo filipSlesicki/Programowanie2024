@@ -29,15 +29,15 @@ public class Map : MonoBehaviour
         return false;
     }
 
-    public List<Tile> GetTilesInRange(Vector3 from, int range)
+    public HashSet<Tile> GetTilesInRange(Vector3 from, int range)
     {
         Vector2Int postionOnGrid = PositionOnGrid(from);
         return GetTilesInRange(postionOnGrid,range);
     }
 
-    public List<Tile> GetTilesInRange(Vector2Int from, int range)
+    public HashSet<Tile> GetTilesInRange(Vector2Int from, int range)
     {
-        List<Tile> tilesInRange = new List<Tile>();
+        HashSet<Tile> tilesInRange = new HashSet<Tile>();
         foreach (Tile tile in tiles)
         {
             Vector2Int distance = tile.Position - from;
