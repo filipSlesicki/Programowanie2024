@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IClickable
 {
     //Typy
     // int - liczba ca³kowita
@@ -72,5 +72,10 @@ public class Player : MonoBehaviour
         shootAudio.Play();
         Debug.Log("Shoot");
         Bullet bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+    }
+
+    public void OnClick()
+    {
+        Debug.Log("Clicked on player");
     }
 }

@@ -5,6 +5,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class Unit : MonoBehaviour
 {
+    public UnitStats Stats;
     public int Team;
     public Tile CurrentTile { get; private set; }
     [field: SerializeField] public bool Moved { get; private set; } = false;
@@ -22,9 +23,11 @@ public class Unit : MonoBehaviour
     private Map map;
     private float tileScale = 2;
 
+
     private void Start()
     {
-        map = FindAnyObjectByType<Map>();
+        
+        map = Map.Instance;
         unitControler = FindAnyObjectByType<UnitControler>();
         unitControler.NextTurnEvent.AddListener(OnNewTurn);
         if (map.TryGetTileOnPosition(transform.position, out Tile tile))
@@ -61,7 +64,8 @@ public class Unit : MonoBehaviour
 
     public void Attack(Unit target)
     {
-        target.GetComponent<Health>().ModifyHealth(-attackDamage);
+        int damage = DamageCalcculator.CalculateDamage(new AttackData(attackDamage, this, target));
+        target.GetComponent<Health>().ModifyHealth(-damage);
         FinishMove();
     }
 

@@ -8,15 +8,16 @@ public class Tile : MonoBehaviour
     public Unit unit;
     public Vector2Int Position;
     private float tileScale = 2;
-
+    public static List<Tile> tiles = new List<Tile>();
 
     private void Awake()
     {
+        tiles.Add(this);
         Position = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.z) / tileScale);
     }
 
     private void Start()
     {
-        Neighbours = FindAnyObjectByType<Map>().GetTilesInRange(Position, 1);
+        Neighbours = Map.Instance.GetTilesInRange(Position, 1);
     }
 }

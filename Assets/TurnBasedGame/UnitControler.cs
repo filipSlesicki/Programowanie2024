@@ -13,10 +13,9 @@ public class UnitControler : MonoBehaviour
     public int activeTeamIndex;
     private ControlState controlState;
 
-
     private void Awake()
     {
-        map = FindAnyObjectByType<Map>();
+        map = Map.Instance;
         NextTurnEvent?.Invoke(teams[activeTeamIndex]);
     }
 

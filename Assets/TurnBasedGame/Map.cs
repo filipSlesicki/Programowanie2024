@@ -1,9 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Map : MonoBehaviour
 {
+    public static Map Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindAnyObjectByType<Map>();
+            }
+            return instance;
+        }
+    }
+    private static Map instance;
     private Tile[] tiles;
     private float tileScale = 2;
 
@@ -12,12 +23,18 @@ public class Map : MonoBehaviour
         tiles = FindObjectsByType<Tile>(FindObjectsSortMode.None);
     }
 
+    public void DebugTiles()
+    {
+        print("asdsd");
+        Debug.Log(Tile.tiles.Count);
+    }
+
     public bool TryGetTileOnPosition(Vector3 position, out Tile tileOnPosition)
     {
         Vector2Int postionOnGrid = PositionOnGrid(position);
         foreach (Tile tile in tiles)
         {
-            if(tile.Position == postionOnGrid)
+            if (tile.Position == postionOnGrid)
             {
                 Debug.Log("Tile position " + tile.Position);
                 tileOnPosition = tile;
@@ -32,7 +49,7 @@ public class Map : MonoBehaviour
     public HashSet<Tile> GetTilesInRange(Vector3 from, int range)
     {
         Vector2Int postionOnGrid = PositionOnGrid(from);
-        return GetTilesInRange(postionOnGrid,range);
+        return GetTilesInRange(postionOnGrid, range);
     }
 
     public HashSet<Tile> GetTilesInRange(Vector2Int from, int range)
